@@ -71,24 +71,42 @@ bits assgnment/
 
 ### Prerequisites
 - **Node.js** ≥ 18
-- **PostgreSQL** ≥ 13 running locally (or a hosted instance / connection string)
+- **PostgreSQL** ≥ 13 — either installed locally, a hosted instance / connection
+  string, **or** use the bundled zero-install option (see Option B below) which
+  needs no separate PostgreSQL install.
 
-### 1. Database
+### 1. Database — choose ONE option
 
-Create the database (the schema/tables are created automatically in the next step):
+**Option A — System PostgreSQL** (if you have it installed)
 
 ```bash
 createdb student_management
 # or inside psql:  CREATE DATABASE student_management;
 ```
 
+**Option B — Zero-install PostgreSQL (no root/sudo needed)** ⭐ easiest
+
+If PostgreSQL isn't installed on your machine, the backend ships with a
+self-contained PostgreSQL (via `embedded-postgres`) that downloads a binary
+once and runs in userspace. In its own terminal:
+
+```bash
+cd backend
+npm install
+npm run db:start              # boots PostgreSQL on :5432, creates DB + schema
+# leave this terminal running
+```
+
+> Option B stores data in `backend/.pgdata/` and applies the schema for you,
+> so you can skip `npm run db:init` below.
+
 ### 2. Backend
 
 ```bash
 cd backend
-cp .env.example .env          # then edit DB credentials in .env
+cp .env.example .env          # then edit DB credentials in .env (defaults work for Option B)
 npm install
-npm run db:init               # creates tables, indexes & triggers
+npm run db:init               # creates tables, indexes & triggers (skip if you used Option B)
 npm run dev                   # starts API on http://localhost:5000
 ```
 

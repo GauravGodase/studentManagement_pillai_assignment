@@ -117,15 +117,29 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <div>
-          <h1>🎓 Student Management System</h1>
-          <p className="muted">Add, search, update and manage student records.</p>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <div className="brand">
+            <span className="brand-logo">🎓</span>
+            <div className="brand-text">
+              <h1>Student Management System</h1>
+              <p>Records · Photos · Analytics</p>
+            </div>
+          </div>
+          <button className="btn primary" onClick={openAdd}>
+            <span>＋</span> Add Student
+          </button>
         </div>
-        <button className="btn primary" onClick={openAdd}>+ Add Student</button>
       </header>
 
-      <main>
+      <main className="content">
+        <div className="page-head">
+          <div>
+            <h2>Students</h2>
+            <p>Add, search, update and manage student records.</p>
+          </div>
+        </div>
+
         <Analytics data={analytics} />
 
         <SearchFilter filters={filters} onChange={handleFilterChange} onReset={resetFilters} />
@@ -135,6 +149,7 @@ export default function App() {
           loading={loading}
           onEdit={openEdit}
           onDelete={setConfirm}
+          onAdd={openAdd}
         />
 
         <Pagination
@@ -144,6 +159,10 @@ export default function App() {
           onPage={setPage}
         />
       </main>
+
+      <footer className="app-footer">
+        Student Management System · Built with React, Express &amp; PostgreSQL
+      </footer>
 
       {/* Add / Edit modal */}
       {showForm && (
@@ -164,13 +183,16 @@ export default function App() {
         <div className="modal-overlay" onClick={() => setConfirm(null)}>
           <div className="modal small" onClick={(e) => e.stopPropagation()}>
             <div className="card">
-              <h2>Drop Student?</h2>
-              <p>
-                Are you sure you want to remove <strong>{confirm.name}</strong> ({confirm.admission_number})?
-                This cannot be undone.
+              <div className="modal-head">
+                <h2>Drop Student?</h2>
+                <button className="modal-close" onClick={() => setConfirm(null)}>×</button>
+              </div>
+              <p className="muted" style={{ marginTop: '0.5rem' }}>
+                Are you sure you want to remove <strong>{confirm.name}</strong> (<span className="mono">{confirm.admission_number}</span>)?
+                This action cannot be undone.
               </p>
               <div className="form-actions">
-                <button className="btn danger" onClick={handleDelete}>Yes, Drop</button>
+                <button className="btn danger" onClick={handleDelete}>Yes, drop student</button>
                 <button className="btn ghost" onClick={() => setConfirm(null)}>Cancel</button>
               </div>
             </div>

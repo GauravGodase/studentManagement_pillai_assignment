@@ -1,18 +1,22 @@
 // Server-side pagination controls.
 export default function Pagination({ page, totalPages, total, onPage }) {
-  if (totalPages <= 1) {
-    return <p className="muted center">{total} student{total === 1 ? '' : 's'} total</p>;
-  }
+  if (total === 0) return null;
 
   return (
     <div className="pagination">
-      <button className="btn small" disabled={page <= 1} onClick={() => onPage(page - 1)}>
-        ← Prev
-      </button>
-      <span>Page {page} of {totalPages} · {total} total</span>
-      <button className="btn small" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
-        Next →
-      </button>
+      <span>
+        Showing page <strong>{page}</strong> of <strong>{totalPages}</strong> · {total} student{total === 1 ? '' : 's'} total
+      </span>
+      {totalPages > 1 && (
+        <div className="pages">
+          <button className="btn small" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+            ← Prev
+          </button>
+          <button className="btn small" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -59,6 +59,8 @@ export default function StudentForm({ student, onSubmit, onCancel, submitting })
   const handleChange = (e) => {
     const { name, value } = e.target;
     setValues((v) => ({ ...v, [name]: value }));
+    // Clear a field's error as the user corrects it.
+    setErrors((prev) => (prev[name] ? { ...prev, [name]: undefined } : prev));
   };
 
   const handlePhoto = (e) => {
@@ -82,39 +84,39 @@ export default function StudentForm({ student, onSubmit, onCancel, submitting })
   };
 
   return (
-    <form className="card form" onSubmit={handleSubmit} noValidate>
-      <h2>{isEdit ? 'Edit Student' : 'Add New Student'}</h2>
-      {isEdit && (
-        <p className="muted">Admission No: <strong>{student.admission_number}</strong></p>
-      )}
+    <form className="card" onSubmit={handleSubmit} noValidate>
+      <div className="modal-head form-head">
+        <div>
+          <h2>{isEdit ? 'Edit Student' : 'Add New Student'}</h2>
+          {isEdit ? (
+            <p className="muted">Admission No: <span className="mono">{student.admission_number}</span></p>
+          ) : (
+            <p className="muted">Admission number is generated automatically.</p>
+          )}
+        </div>
+        {onCancel && <button type="button" className="modal-close" onClick={onCancel}>×</button>}
+      </div>
 
+      <div className="section-label">Personal Information</div>
       <div className="form-grid">
-        <Field label="Full Name" error={errors.name}>
-          <input name="name" value={values.name} onChange={handleChange} placeholder="Jane Doe" />
+        <Field label="Full Name" required error={errors.name}>
+          <input name="name" className={errors.name ? 'invalid' : ''} value={values.name} onChange={handleChange} placeholder="Jane Doe" />
         </Field>
 
-        <Field label="Course" error={errors.course}>
-          <input name="course" value={values.course} onChange={handleChange} placeholder="Computer Science" />
+        <Field label="Email" required error={errors.email}>
+          <input type="email" name="email" className={errors.email ? 'invalid' : ''} value={values.email} onChange={handleChange} placeholder="jane@example.com" />
         </Field>
 
-        <Field label="Year" error={errors.year}>
-          <input type="number" name="year" min="1" max="10" value={values.year} onChange={handleChange} placeholder="1" />
+        <Field label="Mobile Number" required error={errors.mobile}>
+          <input name="mobile" className={errors.mobile ? 'invalid' : ''} value={values.mobile} onChange={handleChange} placeholder="9876543210" />
         </Field>
 
-        <Field label="Date of Birth" error={errors.date_of_birth}>
-          <input type="date" name="date_of_birth" value={values.date_of_birth} onChange={handleChange} />
+        <Field label="Date of Birth" required error={errors.date_of_birth}>
+          <input type="date" name="date_of_birth" className={errors.date_of_birth ? 'invalid' : ''} value={values.date_of_birth} onChange={handleChange} />
         </Field>
 
-        <Field label="Email" error={errors.email}>
-          <input type="email" name="email" value={values.email} onChange={handleChange} placeholder="jane@example.com" />
-        </Field>
-
-        <Field label="Mobile Number" error={errors.mobile}>
-          <input name="mobile" value={values.mobile} onChange={handleChange} placeholder="9876543210" />
-        </Field>
-
-        <Field label="Gender" error={errors.gender}>
-          <select name="gender" value={values.gender} onChange={handleChange}>
+        <Field label="Gender" required error={errors.gender}>
+          <select name="gender" className={errors.gender ? 'invalid' : ''} value={values.gender} onChange={handleChange}>
             <option value="">Select…</option>
             <option>Male</option>
             <option>Female</option>
@@ -122,23 +124,33 @@ export default function StudentForm({ student, onSubmit, onCancel, submitting })
           </select>
         </Field>
 
-        <Field label="Student Photo" error={null}>
-          <input type="file" accept="image/*" onChange={handlePhoto} />
-        </Field>
-
-        <Field label="Address" error={errors.address} full>
-          <textarea name="address" rows="2" value={values.address} onChange={handleChange} placeholder="123 Main St, City" />
+        <Field label="Address" required error={errors.address}>
+          <input name="address" className={errors.address ? 'invalid' : ''} value={values.address} onChange={handleChange} placeholder="123 Main St, City" />
         </Field>
       </div>
 
-      {preview && (
-        <div className="preview">
-          <img src={preview} alt="Preview" />
-        </div>
-      )}
+      <div className="section-label">Academic Information</div>
+      <div className="form-grid">
+        <Field label="Course" required error={errors.course}>
+          <input name="course" className={errors.course ? 'invalid' : ''} value={values.course} onChange={handleChange} placeholder="Computer Science" />
+        </Field>
+
+        <Field label="Year" required error={errors.year}>
+          <input type="number" name="year" min="1" max="10" className={errors.year ? 'invalid' : ''} value={values.year} onChange={handleChange} placeholder="1" />
+        </Field>
+      </div>
+
+      <div className="section-label">Photo</div>
+      <div className="photo-row">
+        {preview && <img className="photo-preview" src={preview} alt="Preview" />}
+        <label className="file-input">
+          <span>📷 {photo || preview ? 'Change photo' : 'Upload photo'}</span>
+          <input type="file" accept="image/*" onChange={handlePhoto} />
+        </label>
+      </div>
 
       <div className="form-actions">
-        <button type="submit" className="btn primary" disabled={submitting}>
+        <button type="submit" className="btn primary grow" disabled={submitting}>
           {submitting ? 'Saving…' : isEdit ? 'Update Student' : 'Add Student'}
         </button>
         {onCancel && (
@@ -151,10 +163,10 @@ export default function StudentForm({ student, onSubmit, onCancel, submitting })
   );
 }
 
-function Field({ label, error, children, full }) {
+function Field({ label, error, required, children }) {
   return (
-    <div className={`field ${full ? 'full' : ''}`}>
-      <label>{label}</label>
+    <div className="field">
+      <label>{label}{required && <span className="req"> *</span>}</label>
       {children}
       {error && <span className="error-text">{error}</span>}
     </div>
